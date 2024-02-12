@@ -11,5 +11,6 @@ resource "github_repository" "repos" {
   allow_squash_merge = each.value.allow_squash_merge
   allow_rebase_merge = each.value.allow_rebase_merge
   has_wiki           = try(each.value.has_wiki, false)
+  has_issues         = each.value.has_issues
 }
 

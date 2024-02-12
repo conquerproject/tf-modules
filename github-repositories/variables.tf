@@ -10,7 +10,8 @@ variable "repos" {
     allow_merge_commit = bool
     allow_squash_merge = bool
     allow_rebase_merge = bool
-    has_wiki = optional(bool)
+    has_wiki           = optional(bool)
+    has_issues         = bool
   }))
 }
 
