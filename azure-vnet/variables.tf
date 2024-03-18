@@ -8,16 +8,6 @@ variable "vnet_address_space" {
   type = list(string)
 }
 
-variable "subnet_prefixes" {
-  description = "subnets prefixes inside the vnet"
-  type = list(string)
-}
-
-variable "subnet_names" {
-  description = "subnets names inside the vnet"
-  type = string
-}
-
 variable "resource_group_name" {
   description = "resource group name"
   type        = string
@@ -26,4 +16,17 @@ variable "resource_group_name" {
 variable "location" {
   description = "resource group location"
   type        = string
+}
+
+variable "subnets" {
+  description = "Map of subnet configurations"
+  type        = map(object({
+    name           = string
+    address_prefix = list(string)
+  }))
+}
+
+variable "tags" {
+  description = "resource tags"
+  type        = map(string)
 }
