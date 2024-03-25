@@ -10,6 +10,11 @@ data "azuread_users" "owners" {
   user_principal_names = var.owners
 }
 
+data "azuread_service_principal" "oidc" {
+  count        = var.self_owner ? 1 : 0
+  display_name = var.app_name
+}
+
 locals {
   # { "/subs../id" => ["Role", ...] } => { "/subs.../id:Role" = { scope = "/subs.../id", role = "Role" }, ... }
   role_assignments = merge([
@@ -20,6 +25,11 @@ locals {
       }
     }
   ]...)
+
+  owners = concat(
+    data.azuread_users.owners.object_ids,
+    var.self_owner ? [data.azuread_service_principal.oidc[0].object_id,] : []
+  )
 }
 
 locals {
@@ -31,12 +41,29 @@ locals {
 
 resource "azuread_application" "oidc" {
   display_name            = var.app_name
-  owners                  = data.azuread_users.owners.object_ids
+  owners                  = local.owners
   description             = "Application for ${var.app_name}"
   prevent_duplicate_names = var.prevent_duplicate_names
 
   api {
     requested_access_token_version = 2
+  }
+
+  dynamic "required_resource_access" {
+    for_each = var.required_resource_accesses
+
+    content {
+      resource_app_id = required_resource_access.value.resource_app_id
+
+      dynamic "resource_access" {
+        for_each = required_resource_access.value.resource_access
+
+        content {
+          id   = resource_access.value.id
+          type = resource_access.value.type
+        }
+      }
+    }
   }
 }
 
