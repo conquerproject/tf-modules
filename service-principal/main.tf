@@ -38,6 +38,23 @@ resource "azuread_application" "oidc" {
   api {
     requested_access_token_version = 2
   }
+
+  dynamic "required_resource_access" {
+    for_each = var.required_resource_accesses
+
+    content {
+      resource_app_id = required_resource_access.value.resource_app_id
+
+      dynamic "resource_access" {
+        for_each = required_resource_access.value.resource_access
+
+        content {
+          id   = resource_access.value.id
+          type = resource_access.value.type
+        }
+      }
+    }
+  }
 }
 
 resource "azuread_service_principal" "oidc" {
