@@ -43,9 +43,11 @@ variable "k8s_version" {
 variable "network_plugin" {
   description = "Network plugin to use for networking"
   type = string
+  default = "azure"
 }
 
 variable "network_plugin_mode" {
   description = "the network plugin mode used for building the Kubernetes network"
   type = string
+  default = "overlay"
 }
